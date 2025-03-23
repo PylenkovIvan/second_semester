@@ -1,5 +1,20 @@
 #include <iostream>
 #include <cmath>
+#include <exception>
+#include <stdexcept>
+
+class ZeroDivider: public std::exception
+{
+public:
+    ZeroDivider(const std::string& info): info(info) {}
+
+    virtual const char* what() const noexcept
+    {
+        return info.c_str();
+    }
+private:
+    std::string info;
+};
 
 class Complex
 {
@@ -30,6 +45,10 @@ public:
 
     Complex operator/(Complex num)
     {
+        if (num.a * num.a + num.b * num.b == 0)
+        {
+            throw ZeroDivider("Divider is zero");
+        }
         return Complex((this->a * num.a + this->b * num.b) / (num.a * num.a + num.b * num.b),
                        (this->b * num.a - this->a * num.b) / (num.a * num.a + num.b * num.b));
     }
@@ -148,22 +167,29 @@ std::istream& operator>>(std::istream& in, Complex& n)
 
 int main()
 {
-    Complex number_1(5, 1);
-    Complex number_2(5, 10);
-    Complex number_3;
+    try
+    {
+        Complex number_1(5, 1);
+        Complex number_2(5, 10);
+        Complex number_3;
 
-    std::cout << "Complex number: a+i*b\n";
-    std::cin >> number_3;
-    std::cout << number_3 << '\n';
+        std::cout << "Complex number: a+i*b\n";
+        std::cin >> number_3;
+        std::cout << number_3 << '\n';
 
-    std::cout << number_1 + number_3 << '\n';
-    std::cout << number_2 - number_1 << '\n';
-    std::cout << number_1 * number_3 << '\n';
-    std::cout << number_2 / number_1 << '\n';
-    std::cout << number_3 * 5 << '\n';
+        std::cout << number_1 + number_3 << '\n';
+        std::cout << number_2 - number_1 << '\n';
+        std::cout << number_1 * number_3 << '\n';
+        std::cout << number_2 / number_3 << '\n';
+        std::cout << number_3 * 5 << '\n';
 
-    std::cout << number_3++ << '\n';
-    std::cout << ++number_3 << '\n';
-    std::cout << number_3-- << '\n';
-    std::cout << --number_3 << '\n';
+        std::cout << number_3++ << '\n';
+        std::cout << ++number_3 << '\n';
+        std::cout << number_3-- << '\n';
+        std::cout << --number_3 << '\n';
+    }
+    catch (const ZeroDivider& z_exc)
+    {
+        std::cout << "Bad divider: " << z_exc.what() << '\n';
+    }
 }

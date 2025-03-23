@@ -2,6 +2,8 @@
 #include <numeric>
 #include <vector>
 #include <algorithm>
+#include <fstream>
+#include <iterator>
 using namespace std;
 
 
@@ -80,4 +82,11 @@ int main()
     {
         cout << v[i] << ' ';
     }
+
+    fstream f_out("output.txt", ios::out);
+
+    copy(v.begin(), v.end(), ostream_iterator<int>(f_out, " "));
+    f_out << '\n';
+
+    f_out.close();
 }
